@@ -12,7 +12,6 @@ class TwitterHandler:
                 os.environ['TWITTER_CONSUMER_SECRET']
             )
         )
-        print("Twitter Handler!")
 
     def home(self):
         return self.t.statuses.home_timeline()
@@ -20,4 +19,4 @@ class TwitterHandler:
 
 if __name__ == '__main__':
     th = TwitterHandler()
-    print(th.home())
+    [print(tweet) for tweet in th.home()]
