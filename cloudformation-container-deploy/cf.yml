@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Compute Power for Container
+Metadata: {}
+Mappings: {}
+Conditions: {}
+Outputs: {}
+Parameters:
+  SecurityGroupIds:
+    Type: String
+    Description: IDs of relevant security group
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+    - t2.micro
+    - m1.small
+    - m1.large
+    Description: Enter t2.micro, m1.small, or m1.large. Default is t2.micro.
+  ImageId:
+    Type: String
+    Description: ID for image used for EC2 instance
+  KeyName:
+    Type: String
+    Description: KeyName of KeyPair used to associate with EC2 instance
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId:
+        Ref: ImageId
+      InstanceType:
+        Ref: InstanceTypeParameter
+      SecurityGroupIds:
+        - Ref: SecurityGroupIds
+      KeyName:
+        Ref: KeyName
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          touch /test.txt
+          echo "test 2!" > /test.txt
+          chown ec2-user /test.txt
+          yum update -y -q
+          yum install docker -y -q
+          usermod -a -G docker ec2-user
+          chown ec2-user $(which docker)
+          su - ec2-user
+          service docker start
